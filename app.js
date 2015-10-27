@@ -50,6 +50,7 @@ app.controller("BrandsCtrl", function($scope) {
     switch(num_brand) {
       case 1:
         $scope.brand1 = name;
+        $scope.onchange();
         console.log("update brand 1");
         break;
         case 2:
@@ -202,8 +203,10 @@ app.controller("BrandsCtrl", function($scope) {
 
         $scope.onchange = function(){
             $scope.data = [];
-            angular.forEach($scope.initData, function(value, index){
-                if ($scope.checkboxes[value.key]) $scope.data.push(value);
+            angular.forEach($scope.initData, function(data, index){
+              console.log(index);
+              console.log(data);
+                if (data.key === $scope.brand1) $scope.data.push(data);
             })
         }
 });
