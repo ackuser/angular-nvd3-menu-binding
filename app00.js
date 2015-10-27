@@ -1,199 +1,72 @@
-app = angular.module('BrandsApp', ['nvd3']);
+var app = angular.module('plunker', ['nvd3']);
 
-app.controller("BrandsCtrl", function($scope) {
-
-
-  $scope.brand_titles = [
-    'Square','Stripe','Paypal','Apple Pay'
-  ];
-
-  $scope.brand1 = 'Paypal';
-  $scope.brand2 = '';
-  $scope.enable2 = false;
-  $scope.brand3 = '';
-  $scope.enable3 = false;
-  $scope.num_visible_brands = 1;
-
-  $scope.variable1 = 'Volume of speech';
-  $scope.variable2 = '';
-  $scope.enable_var2 = false;
-  $scope.variable3 = '';
-  $scope.enable_var3 = false;
-  $scope.num_visible_vars = 1;
-
-  console.log($scope.variable1);
-
-
-  $scope.variable_titles = [
-    'Volume of speech','Average influence','Proportion of top influencers','Proportion positive sentiment','Total interactions last 5 days','Awareness','Consideration','Sentiment','Usage','Volume of searches','Volume of searches for downloads'
-  ];
-
-  $scope.variable_speech = [
-    'Volume of speech','Average influence','Proportion of top influencers','Proportion positive sentiment'
-  ];
-
-  $scope.variable_stated = [
-    'Awareness','Consideration','Proportion of top influencers','Usage'
-  ];
-
-  $scope.variable_search = [
-    'Volume of searches','Volume of searches for downloads'
-  ];
-
-  $scope.variable_shared = [
-    'Total interactions last 5 days'
-  ];
-
-
-  $scope.updateBrand = function ($event, num_brand ,name)
-  {
-    switch(num_brand) {
-      case 1:
-        $scope.brand1 = name;
-        $scope.onchange();
-        console.log("update brand 1");
-        break;
-        case 2:
-          $scope.brand2 = name;
-          console.log("update brand 2");
-          $scope.enable2 = true;
-          $scope.num_visible_brands++;
-          break;
-          case 3:
-            $scope.brand3 = name;
-            console.log("update brand 3");
-            $scope.enable3 = true;
-            $scope.num_visible_brands++;
-            break;
-          };
+app.controller('MainCtrl', function($scope) {
+ $scope.options = {
+            chart: {
+                type: 'linePlusBarWithFocusChart',
+                height: 500,
+                margin: {
+                    top: 30,
+                    right: 75,
+                    bottom: 50,
+                    left: 75
+                },
+                bars: {
+                    forceY: [0]
+                },
+                bars2: {
+                    forceY: [0]
+                },
+                color: ['#2ca02c', 'darkred','blue','yellow'],
+                x: function(d,i) { return i },
+                xAxis: {
+                    axisLabel: 'X Axis',
+                    tickFormat: function(d) {
+                        var dx = $scope.data[0].values[d] && $scope.data[0].values[d].x || 0;
+                        if (dx > 0) {
+                            return d3.time.format('%x')(new Date(dx))
+                        }
+                        return null;
+                    }
+                },
+                x2Axis: {
+                    tickFormat: function(d) {
+                        var dx = $scope.data[0].values[d] && $scope.data[0].values[d].x || 0;
+                        return d3.time.format('%b-%Y')(new Date(dx))
+                    },
+                    showMaxMin: false
+                },
+                y1Axis: {
+                    axisLabel: 'Y1 Axis',
+                    tickFormat: function(d){
+                        return d3.format(',f')(d);
+                    }
+                },
+                y2Axis: {
+                    axisLabel: 'Y2 Axis',
+                    tickFormat: function(d) {
+                        return '$' + d3.format(',.2f')(d)
+                    }
+                },
+                y3Axis: {
+                    tickFormat: function(d){
+                        return d3.format(',f')(d);
+                    }
+                },
+                y4Axis: {
+                    tickFormat: function(d) {
+                        return '$' + d3.format(',.2f')(d)
+                    }
+                }
+            }
         };
 
-        $scope.updateVariable = function ($event, num_var ,name){
-          switch(num_var) {
-            case 1:
-              $scope.variable1 = name;
-              break;
-              case 2:
-                $scope.variable2 = name;
-                $scope.enable_var2 = true;
-                $scope.num_visible_vars++;
-                break;
-                case 3:
-                  $scope.variable3 = name;
-                  $scope.enable_var3 = true;
-                  $scope.num_visible_vars++;
-                  break;
-                };
-                //$event.stopPropagation();
-              };
-
-        $scope.updateCancel = function ($event, num_brand ,name)
-        {
-          switch(num_brand) {
-            case 2:
-              $scope.brand2 = name;
-              $scope.enable2 = false;
-              $scope.num_visible_brands--;
-              break;
-              case 3:
-                $scope.brand3 = name;
-                $scope.enable3 = false;
-                $scope.num_visible_brands--;
-                break;
-              };
-            };
-
-            $scope.updateCancelVar = function ($event, num_var ,name)
-            {
-              switch(num_var) {
-                case 2:
-                  $scope.variable2 = name;
-                  $scope.enable_var2 = false;
-                  $scope.num_visible_vars--;
-                  break;
-                  case 3:
-                    $scope.variable3 = name;
-                    $scope.enable_var3 = false;
-                    $scope.num_visible_vars--;
-                    break;
-                  };
-                };
-
-
-
-            $scope.notCurrentBrand = function(brand) {
-              return brand !== $scope.brand1 && brand !== $scope.brand2  && brand !== $scope.brand3;
-            };
-
-
-                  $scope.notCurrentVariable = function(variable) {
-                    return variable !== $scope.variable1 && variable !== $scope.variable2  && variable !== $scope.variable3;
-                  };
-
-
-
-        //Chart options
-        $scope.options = {
-          chart: {
-              type: 'linePlusBarWithFocusChart',
-              height: 500,
-              margin: {
-                  top: 30,
-                  right: 75,
-                  bottom: 50,
-                  left: 75
-              },
-              bars: {
-                  forceY: [0]
-              },
-              bars2: {
-                  forceY: [0]
-              },
-              color: ['#2ca02c', 'darkred','blue','yellow'],
-              x: function(d,i) { return i },
-              xAxis: {
-                  axisLabel: 'X Axis',
-                  tickFormat: function(d) {
-                      var dx = $scope.data[0].values[d] && $scope.data[0].values[d].x || 0;
-                      if (dx > 0) {
-                          return d3.time.format('%x')(new Date(dx))
-                      }
-                      return null;
-                  }
-              },
-              x2Axis: {
-                  tickFormat: function(d) {
-                      var dx = $scope.data[0].values[d] && $scope.data[0].values[d].x || 0;
-                      return d3.time.format('%b-%Y')(new Date(dx))
-                  },
-                  showMaxMin: false
-              },
-              y1Axis: {
-                  axisLabel: 'Y1 Axis',
-                  tickFormat: function(d){
-                      return d3.format(',f')(d);
-                  }
-              },
-              y2Axis: {
-                  axisLabel: 'Y2 Axis',
-                  tickFormat: function(d) {
-                      return '$' + d3.format(',.2f')(d)
-                  }
-              },
-              y3Axis: {
-                  tickFormat: function(d){
-                      return d3.format(',f')(d);
-                  }
-              },
-              y4Axis: {
-                  tickFormat: function(d) {
-                      return '$' + d3.format(',.2f')(d)
-                  }
-              }
-          }
-      };
-
-        $scope.initData = [
+        $scope.data = [
+            /*{
+                "key" : "Quantity" ,
+                "bar": true,
+                "values" : [ [ 1136005200000 , 1271000.0] , [ 1138683600000 , 1271000.0] , [ 1141102800000 , 1271000.0] , [ 1143781200000 , 0] , [ 1146369600000 , 0] , [ 1149048000000 , 0] , [ 1151640000000 , 0] , [ 1154318400000 , 0] , [ 1156996800000 , 0] , [ 1159588800000 , 3899486.0] , [ 1162270800000 , 3899486.0] , [ 1164862800000 , 3899486.0] , [ 1167541200000 , 3564700.0] , [ 1170219600000 , 3564700.0] , [ 1172638800000 , 3564700.0] , [ 1175313600000 , 2648493.0] , [ 1177905600000 , 2648493.0] , [ 1180584000000 , 2648493.0] , [ 1183176000000 , 2522993.0] , [ 1185854400000 , 2522993.0] , [ 1188532800000 , 2522993.0] , [ 1191124800000 , 2906501.0] , [ 1193803200000 , 2906501.0] , [ 1196398800000 , 2906501.0] , [ 1199077200000 , 2206761.0] , [ 1201755600000 , 2206761.0] , [ 1204261200000 , 2206761.0] , [ 1206936000000 , 2287726.0] , [ 1209528000000 , 2287726.0] , [ 1212206400000 , 2287726.0] , [ 1214798400000 , 2732646.0] , [ 1217476800000 , 2732646.0] , [ 1220155200000 , 2732646.0] , [ 1222747200000 , 2599196.0] , [ 1225425600000 , 2599196.0] , [ 1228021200000 , 2599196.0] , [ 1230699600000 , 1924387.0] , [ 1233378000000 , 1924387.0] , [ 1235797200000 , 1924387.0] , [ 1238472000000 , 1756311.0] , [ 1241064000000 , 1756311.0] , [ 1243742400000 , 1756311.0] , [ 1246334400000 , 1743470.0] , [ 1249012800000 , 1743470.0] , [ 1251691200000 , 1743470.0] , [ 1254283200000 , 1519010.0] , [ 1256961600000 , 1519010.0] , [ 1259557200000 , 1519010.0] , [ 1262235600000 , 1591444.0] , [ 1264914000000 , 1591444.0] , [ 1267333200000 , 1591444.0] , [ 1270008000000 , 1543784.0] , [ 1272600000000 , 1543784.0] , [ 1275278400000 , 1543784.0] , [ 1277870400000 , 1309915.0] , [ 1280548800000 , 1309915.0] , [ 1283227200000 , 1309915.0] , [ 1285819200000 , 1331875.0] , [ 1288497600000 , 1331875.0] , [ 1291093200000 , 1331875.0] , [ 1293771600000 , 1331875.0] , [ 1296450000000 , 1154695.0] , [ 1298869200000 , 1154695.0] , [ 1301544000000 , 1194025.0] , [ 1304136000000 , 1194025.0] , [ 1306814400000 , 1194025.0] , [ 1309406400000 , 1194025.0] , [ 1312084800000 , 1194025.0] , [ 1314763200000 , 1244525.0] , [ 1317355200000 , 475000.0] , [ 1320033600000 , 475000.0] , [ 1322629200000 , 475000.0] , [ 1325307600000 , 690033.0] , [ 1327986000000 , 690033.0] , [ 1330491600000 , 690033.0] , [ 1333166400000 , 514733.0] , [ 1335758400000 , 514733.0]]
+            },*/
             {
                 key: "Square",
                 mean: 250,
@@ -217,18 +90,4 @@ app.controller("BrandsCtrl", function($scope) {
                 series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
                 return series;
             });
-
-        //Chart data
-        $scope.data = angular.copy($scope.initData);
-
-        $scope.checkboxes = {};
-
-        $scope.onchange = function(){
-            $scope.data = [];
-            angular.forEach($scope.initData, function(data, index){
-              console.log(index);
-              console.log(data);
-                if (data.key === $scope.brand1) $scope.data.push(data);
-            })
-        }
 });
